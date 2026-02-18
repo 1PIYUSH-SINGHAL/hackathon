@@ -1,0 +1,69 @@
+/* ============================= */
+/* TERMINAL TEXT BASE */
+/* ============================= */
+
+.terminal-stream {
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* Boot / Output Lines */
+
+.terminal-line {
+    margin-bottom: 8px;
+}
+
+/* Command Prompt */
+
+.command-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.prompt-symbol {
+    color: var(--accent-green);
+}
+
+.command-text {
+    color: var(--text-primary);
+}
+
+/* Cursor */
+
+.cursor {
+    display: inline-block;
+    width: 8px;
+    margin-left: 2px;
+    background: var(--text-primary);
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    75% { opacity: 0; }
+}
+
+/* ASCII Blocks */
+
+.ascii-block {
+    white-space: pre;
+    line-height: 1.4;
+    margin: 16px 0;
+    color: var(--text-primary);
+}
+
+/* Tables */
+
+.ascii-table {
+    white-space: pre;
+    margin: 18px 0;
+    line-height: 1.6;
+}
+
+/* Muted System Text */
+
+.system-muted {
+    color: var(--text-muted);
+}

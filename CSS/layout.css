@@ -1,0 +1,140 @@
+/* ============================= */
+/* HEADER */
+/* ============================= */
+
+.terminal-header {
+    height: 44px;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.control.red { background: #ff5f56; }
+.control.yellow { background: #ffbd2e; }
+.control.green { background: #27c93f; }
+
+.terminal-title {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+
+/* ============================= */
+/* MAIN SPLIT LAYOUT */
+/* ============================= */
+
+.terminal-grid {
+    display: flex;
+    align-items: flex-start;
+}
+
+/* LEFT TERMINAL STREAM */
+
+.terminal-stream {
+    flex: 1;
+    min-width: 0;
+    padding-right: 40px;
+}
+
+/* RIGHT SYSTEM STATUS */
+
+.terminal-status {
+    width: 260px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border-color);
+    padding-left: 22px;
+    padding-top: 4px;
+}
+
+
+/* ============================= */
+/* STATUS STYLING */
+/* ============================= */
+
+.status-title {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: var(--accent-cyan);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+.status-block {
+    white-space: pre;
+    line-height: 1.8;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.status-live {
+    color: var(--accent-green);
+}
+
+/* ============================= */
+/* LAYOUT CONTAINER */
+/* ============================= */
+
+.layout-container {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+/* ============================= */
+/* ABOUT TERMINAL */
+/* ============================= */
+
+.about-terminal {
+    position: fixed;
+    top: 80px;
+    right: -400px;
+    width: 360px;
+    height: 520px;
+
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+
+    display: flex;
+    flex-direction: column;
+
+    transition: right 0.4s ease;
+    z-index: 100;
+}
+
+.about-terminal.active {
+    right: 40px;
+}
+
+.about-header {
+    height: 40px;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding-left: 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.about-body {
+    padding: 18px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: pre;
+}
