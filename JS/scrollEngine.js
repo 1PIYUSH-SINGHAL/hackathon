@@ -2,14 +2,18 @@ import { TerminalEngine } from "./terminalEngine.js";
 
 export class ScrollEngine {
 
-  constructor({ rulesSection, miniEventsSection, RULES, MINI_EVENTS }) {
+  constructor({ rulesSection, miniEventsSection, judgingSection, RULES, MINI_EVENTS, JUDGING }) {
     this.rulesSection = rulesSection;
     this.miniEventsSection = miniEventsSection;
+    this.judgingSection = judgingSection;
+
     this.RULES = RULES;
     this.MINI_EVENTS = MINI_EVENTS;
+    this.JUDGING = JUDGING;
 
     this.rulesRendered = false;
     this.miniRendered = false;
+    this.judgingRendered = false;
   }
 
   init() {
@@ -28,6 +32,11 @@ export class ScrollEngine {
             this.renderMiniEvents();
           }
 
+          if (entry.target === this.judgingSection && entry.isIntersecting && !this.judgingRendered) {
+            this.judgingRendered = true;
+            this.renderJudging();
+          }
+
         });
       },
       { threshold: 0.25 }
@@ -35,6 +44,7 @@ export class ScrollEngine {
 
     observer.observe(this.rulesSection);
     observer.observe(this.miniEventsSection);
+    observer.observe(this.judgingSection);
   }
 
   async renderRules() {
@@ -67,15 +77,24 @@ ${this.MINI_EVENTS.map(e =>
 scheduler active.
 `;
 
-    } else if (typeof this.MINI_EVENTS === "string") {
-
-      output = this.MINI_EVENTS;
-
     } else {
-
-      output = "mini events data format invalid.";
+      output = this.MINI_EVENTS;
     }
 
     await terminal.printAsciiBlock(output, this.miniEventsSection);
+  }
+
+  async renderJudging() {
+
+    const terminal = new TerminalEngine(this.judgingSection);
+    terminal.setTypingSpeed(18);
+
+    await terminal.printWithCursor("./event --judge", this.judgingSection);
+
+    const lines = this.JUDGING.split("\n");
+
+    for (const line of lines) {
+      await terminal.printWithCursor(line, this.judgingSection);
+    }
   }
 }
