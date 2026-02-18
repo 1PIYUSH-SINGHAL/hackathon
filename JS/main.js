@@ -8,13 +8,13 @@ import { WORKSHOPS } from "../DATA/workshops.js";
 import { MINI_EVENTS } from "../DATA/miniEvents.js";
 import { JUDGING } from "../DATA/judging.js";
 import { TIMELINE } from "../DATA/timeline.js";
+import { REGISTRATION } from "../DATA/registration.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
+
   await runBootSequence();
 
   const bootSection = document.getElementById("boot-section");
-  const rulesSection = document.getElementById("rules-section");
-  const miniEventsSection = document.getElementById("mini-events-section");
 
   const terminal = new TerminalEngine(bootSection);
   terminal.setTypingSpeed(20);
@@ -25,8 +25,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await terminal.printWithCursor(
     "g++ -std=c++20 event.cpp -o event",
-    bootSection,
+    bootSection
   );
+
   await terminal.printWithCursor("./event --show-config", bootSection);
   await terminal.printAsciiBlock(EVENT_CONFIG, bootSection);
 
@@ -39,7 +40,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const workshopBlock = `
 initializing workshop modules...
 
-${WORKSHOPS.map((w) => `[✓] ${w.title.padEnd(40)} | ${w.timing}`).join("\n")}
+${WORKSHOPS.map(w =>
+    `[✓] ${w.title.padEnd(40)} | ${w.timing}`
+  ).join("\n")}
 
 modules loaded successfully.
 `;
@@ -47,7 +50,7 @@ modules loaded successfully.
   await terminal.printAsciiBlock(workshopBlock, bootSection);
 
   /* ========================= */
-  /* SCROLL ENGINE (Rules + Mini Events) */
+  /* SCROLL ENGINE */
   /* ========================= */
 
   const scroll = new ScrollEngine({
@@ -55,10 +58,12 @@ modules loaded successfully.
     miniEventsSection: document.getElementById("mini-events-section"),
     judgingSection: document.getElementById("judging-section"),
     timelineSection: document.getElementById("timeline-section"),
+    registrationSection: document.getElementById("registration-section"),
     RULES,
     MINI_EVENTS,
     JUDGING,
     TIMELINE,
+    REGISTRATION
   });
 
   scroll.init();

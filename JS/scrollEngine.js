@@ -1,56 +1,69 @@
 import { TerminalEngine } from "./terminalEngine.js";
 
 export class ScrollEngine {
-
   constructor({
     rulesSection,
     miniEventsSection,
     judgingSection,
     timelineSection,
+    registrationSection,
     RULES,
     MINI_EVENTS,
     JUDGING,
-    TIMELINE
+    TIMELINE,
+    REGISTRATION,
   }) {
     this.rulesSection = rulesSection;
     this.miniEventsSection = miniEventsSection;
     this.judgingSection = judgingSection;
     this.timelineSection = timelineSection;
+    this.registrationSection = registrationSection;
 
     this.RULES = RULES;
     this.MINI_EVENTS = MINI_EVENTS;
     this.JUDGING = JUDGING;
     this.TIMELINE = TIMELINE;
+    this.REGISTRATION = REGISTRATION;
 
     this.rulesRendered = false;
     this.miniRendered = false;
     this.judgingRendered = false;
+    this.registrationRendered = false;
   }
 
   init() {
-
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
-
-          if (entry.target === this.rulesSection && entry.isIntersecting && !this.rulesRendered) {
+        entries.forEach((entry) => {
+          if (
+            entry.target === this.rulesSection &&
+            entry.isIntersecting &&
+            !this.rulesRendered
+          ) {
             this.rulesRendered = true;
             this.renderRules();
           }
 
-          if (entry.target === this.miniEventsSection && entry.isIntersecting && !this.miniRendered) {
+          if (
+            entry.target === this.miniEventsSection &&
+            entry.isIntersecting &&
+            !this.miniRendered
+          ) {
             this.miniRendered = true;
             this.renderMiniEvents();
           }
 
-          if (entry.target === this.judgingSection && entry.isIntersecting && !this.judgingRendered) {
+          if (
+            entry.target === this.judgingSection &&
+            entry.isIntersecting &&
+            !this.judgingRendered
+          ) {
             this.judgingRendered = true;
-            this.renderJudgingAndThenTimeline();
+            this.renderJudgingThenTimelineThenRegistration();
           }
-
         });
       },
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     observer.observe(this.rulesSection);
@@ -59,7 +72,6 @@ export class ScrollEngine {
   }
 
   async renderRules() {
-
     const terminal = new TerminalEngine(this.rulesSection);
     terminal.setTypingSpeed(20);
 
@@ -68,26 +80,26 @@ export class ScrollEngine {
   }
 
   async renderMiniEvents() {
-
     const terminal = new TerminalEngine(this.miniEventsSection);
     terminal.setTypingSpeed(20);
 
-    await terminal.printWithCursor("./event --run-mini-events", this.miniEventsSection);
+    await terminal.printWithCursor(
+      "./event --run-mini-events",
+      this.miniEventsSection,
+    );
 
     let output;
 
     if (Array.isArray(this.MINI_EVENTS)) {
-
       output = `
 starting runtime event scheduler...
 
-${this.MINI_EVENTS.map(e =>
-        `[${e.time}] ${e.name.padEnd(30)} .... queued`
-      ).join("\n")}
+${this.MINI_EVENTS.map(
+  (e) => `[${e.time}] ${e.name.padEnd(30)} .... queued`,
+).join("\n")}
 
 scheduler active.
 `;
-
     } else {
       output = this.MINI_EVENTS;
     }
@@ -95,12 +107,14 @@ scheduler active.
     await terminal.printAsciiBlock(output, this.miniEventsSection);
   }
 
-  async renderJudgingAndThenTimeline() {
-
+  async renderJudgingThenTimelineThenRegistration() {
     const judgingTerminal = new TerminalEngine(this.judgingSection);
     judgingTerminal.setTypingSpeed(8);
 
-    await judgingTerminal.printWithCursor("./event --judge", this.judgingSection);
+    await judgingTerminal.printWithCursor(
+      "./event --judge",
+      this.judgingSection,
+    );
 
     const lines = this.JUDGING.split("\n");
 
@@ -108,14 +122,98 @@ scheduler active.
       await judgingTerminal.printWithCursor(line, this.judgingSection);
     }
 
-    // Small pause for realism
-    await new Promise(res => setTimeout(res, 200));
+    await new Promise((res) => setTimeout(res, 300));
 
-    // Now render timeline cleanly as ASCII block
     const timelineTerminal = new TerminalEngine(this.timelineSection);
     timelineTerminal.setTypingSpeed(18);
 
-    await timelineTerminal.printWithCursor("./event --timeline", this.timelineSection);
+    await timelineTerminal.printWithCursor(
+      "./event --timeline",
+      this.timelineSection,
+    );
     await timelineTerminal.printAsciiBlock(this.TIMELINE, this.timelineSection);
+
+    await new Promise((res) => setTimeout(res, 400));
+
+    await this.renderRegistration();
+  }
+
+  async renderRegistration() {
+    if (this.registrationRendered) return;
+    this.registrationRendered = true;
+
+    const terminal = new TerminalEngine(this.registrationSection);
+    terminal.setTypingSpeed(18);
+
+    await terminal.printWithCursor(
+      "./event --register",
+      this.registrationSection,
+    );
+    await terminal.printAsciiBlock(this.REGISTRATION, this.registrationSection);
+
+    this.awaitUserInput(terminal);
+  }
+
+  awaitUserInput(terminal) {
+    const inputWrapper = document.createElement("div");
+    inputWrapper.style.display = "flex";
+    inputWrapper.style.alignItems = "center";
+    inputWrapper.style.marginTop = "8px";
+
+    const prompt = document.createElement("span");
+    prompt.textContent = "> ";
+    prompt.style.marginRight = "6px";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.maxLength = 1;
+    input.autofocus = true;
+    input.style.background = "transparent";
+    input.style.border = "none";
+    input.style.outline = "none";
+    input.style.color = "#00ff66";
+    input.style.fontFamily = "inherit";
+    input.style.fontSize = "inherit";
+    input.style.width = "20px";
+
+    inputWrapper.appendChild(prompt);
+    inputWrapper.appendChild(input);
+
+    this.registrationSection.appendChild(inputWrapper);
+
+    input.focus();
+
+    input.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const value = input.value.toLowerCase();
+
+        inputWrapper.remove();
+
+        if (value === "y") {
+          await terminal.printWithCursor("> y", this.registrationSection);
+          await terminal.printWithCursor(
+            "opening secure connection...",
+            this.registrationSection,
+          );
+          await terminal.printWithCursor(
+            "redirecting to registration portal...",
+            this.registrationSection,
+          );
+
+          window.open("https://YOUR_GOOGLE_SITES_LINK", "_blank");
+
+          await terminal.printWithCursor(
+            "connection established.",
+            this.registrationSection,
+          );
+        } else {
+          await terminal.printWithCursor("> n", this.registrationSection);
+          await terminal.printWithCursor(
+            "registration aborted.",
+            this.registrationSection,
+          );
+        }
+      }
+    });
   }
 }

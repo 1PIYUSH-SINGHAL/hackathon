@@ -6,5 +6,6 @@ export const EVENT_CONFIG = `
 | Duration        | 36 Hours              |
 | Format          | Online                |
 | Theme           | DevTools              |
+| Date            | To Be Announced       |
 +------------------------------------------+
 `;
