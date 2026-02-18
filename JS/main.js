@@ -4,6 +4,7 @@ import { ScrollEngine } from "./scrollEngine.js";
 
 import { EVENT_CONFIG } from "../DATA/eventConfig.js";
 import { RULES } from "../DATA/rules.js";
+import { WORKSHOPS } from "../DATA/workshops.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -15,13 +16,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   const terminal = new TerminalEngine(bootSection);
   terminal.setTypingSpeed(20);
 
-  /* Boot Flow */
+  /* CONFIG */
 
   await terminal.printWithCursor("g++ -std=c++20 event.cpp -o event", bootSection);
   await terminal.printWithCursor("./event --show-config", bootSection);
   await terminal.printAsciiBlock(EVENT_CONFIG, bootSection);
 
-  /* Prepare Scroll Engine */
+  /* WORKSHOPS */
+
+  await terminal.printWithCursor("./event --init-workshops", bootSection);
+
+  const workshopBlock = `
+initializing workshop modules...
+
+${WORKSHOPS.map(w => 
+  `[✓] ${w.title.padEnd(40)} | ${w.timing}`
+).join("\n")}
+
+modules loaded successfully.
+`;
+
+  await terminal.printAsciiBlock(workshopBlock, bootSection);
+
+  /* SCROLL ENGINE (Rules remain intact) */
 
   const scroll = new ScrollEngine({
     rulesSection,
