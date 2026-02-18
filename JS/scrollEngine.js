@@ -29,6 +29,8 @@ export class ScrollEngine {
     this.miniRendered = false;
     this.judgingRendered = false;
     this.registrationRendered = false;
+
+    this.renderChain = Promise.resolve();
   }
 
   init() {
@@ -41,7 +43,11 @@ export class ScrollEngine {
             !this.rulesRendered
           ) {
             this.rulesRendered = true;
-            this.renderRules();
+
+            this.renderChain = this.renderChain.then(async () => {
+              await this.renderRules();
+              await new Promise((res) => setTimeout(res, 300));
+            });
           }
 
           if (
@@ -50,7 +56,11 @@ export class ScrollEngine {
             !this.miniRendered
           ) {
             this.miniRendered = true;
-            this.renderMiniEvents();
+
+            this.renderChain = this.renderChain.then(async () => {
+              await this.renderMiniEvents();
+              await new Promise((res) => setTimeout(res, 300));
+            });
           }
 
           if (
@@ -59,7 +69,11 @@ export class ScrollEngine {
             !this.judgingRendered
           ) {
             this.judgingRendered = true;
-            this.renderJudgingThenTimelineThenRegistration();
+
+            this.renderChain = this.renderChain.then(async () => {
+              await this.renderJudgingThenTimelineThenRegistration();
+              await new Promise((res) => setTimeout(res, 300));
+            });
           }
         });
       },
@@ -73,7 +87,7 @@ export class ScrollEngine {
 
   async renderRules() {
     const terminal = new TerminalEngine(this.rulesSection);
-    terminal.setTypingSpeed(20);
+    terminal.setTypingSpeed(40);
 
     await terminal.printWithCursor("./event --load-rules", this.rulesSection);
     await terminal.printAsciiBlock(this.RULES, this.rulesSection);
@@ -81,7 +95,7 @@ export class ScrollEngine {
 
   async renderMiniEvents() {
     const terminal = new TerminalEngine(this.miniEventsSection);
-    terminal.setTypingSpeed(20);
+    terminal.setTypingSpeed(40);
 
     await terminal.printWithCursor(
       "./event --run-mini-events",
@@ -109,6 +123,8 @@ scheduler active.
 
   async renderJudgingThenTimelineThenRegistration() {
     const judgingTerminal = new TerminalEngine(this.judgingSection);
+
+    // Faster judging typing speed
     judgingTerminal.setTypingSpeed(8);
 
     await judgingTerminal.printWithCursor(
@@ -133,7 +149,8 @@ scheduler active.
     );
     await timelineTerminal.printAsciiBlock(this.TIMELINE, this.timelineSection);
 
-    await new Promise((res) => setTimeout(res, 400));
+    // 3 second cinematic gap before registration
+    await new Promise((res) => setTimeout(res, 1000));
 
     await this.renderRegistration();
   }
