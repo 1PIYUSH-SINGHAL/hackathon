@@ -7,6 +7,7 @@ import { RULES } from "../DATA/rules.js";
 import { WORKSHOPS } from "../DATA/workshops.js";
 import { MINI_EVENTS } from "../DATA/miniEvents.js";
 import { JUDGING } from "../DATA/judging.js";
+import { TIMELINE } from "../DATA/timeline.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   await runBootSequence();
@@ -53,9 +54,11 @@ modules loaded successfully.
     rulesSection: document.getElementById("rules-section"),
     miniEventsSection: document.getElementById("mini-events-section"),
     judgingSection: document.getElementById("judging-section"),
+    timelineSection: document.getElementById("timeline-section"),
     RULES,
     MINI_EVENTS,
     JUDGING,
+    TIMELINE,
   });
 
   scroll.init();
